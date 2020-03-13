@@ -8,9 +8,18 @@ const app = express()
 
 app.use(morgan('dev'))
 
+// app.use(validateBearerToken)
+
 app.use(function validateBearerToken(req, res, next) {
-    console.log('validate bearer token middleware')
-    debugger
+   const apiToken = process.env.API_TOKEN
+   const authToken = req.get('Authorization')
+    
+   debugger
+
+    if(!authToken || authToken.split(' ')[1] !== apiToken) {
+        return res.status(401).json({error: 'UnAuthorized Request'})
+    }
+
     next()
 })
 
@@ -27,7 +36,7 @@ function handleGetPokemon(req, res) {
 app.get('/types', handleGetTypes)
 app.get('/pokemon', handleGetPokemon)
 
-const PORT = 8000
+const PORT = 3000
 
 app.listen(PORT,  () => {
     console.log(`Server is listening on http://localhost:${PORT}`)
